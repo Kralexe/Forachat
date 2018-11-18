@@ -9,7 +9,8 @@
   "author": "Alex Krokhichev",
   "license": "ISC",
   "dependencies": {
-    "socket.io": "*",
-    "express": "*"
+    "express": "*",
+    "simple-peer": "^9.1.2",
+    "socket.io": "*"
   }
 }

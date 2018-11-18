@@ -50,6 +50,7 @@
 					<ul class="list-group" id="users"></ul>
 				</div>
 			</div>
+	    
 			<!--They also see textarea for entering they messages and button for submitting them-->
 			<div class="col-md-8">
 				<div class="chat" id="chat"></div>
@@ -77,7 +78,7 @@
 			var $users = $('#users');
 			var $username = $('#username');
 
-			//on submitting the message we invoke 'send message function and clearing message input field'
+			//on submitting the message we invoke 'send message' function and clearing message input field
 			$messageForm.submit(function(e){
 				e.preventDefault();
 				socket.emit('send message', $message.val());
@@ -109,6 +110,16 @@
 				}
 				$users.html(html);
 			})
+
+			//it's for alert window to pop up when no nickname is entered
+			socket.on('alert user', function(text){
+				alert('Enter your nickname');
+			});
+
+			socket.on('alert another user', function(text){
+				alert('This nickname is already taken');
+			});
+
 		});
 	</script>
 </body>
