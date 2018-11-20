@@ -123,7 +123,7 @@
 
 			//when this function fires up we add currently online users to an unordered list with id #users, when some user leaves, this function we'll also update available users
 			socket.on('get users1', function(data){
-				var html = '';
+				let html = '';
 				for(i=0; i<data.length;i++){
 					html += '<li class="list-group-item">'+data[i]+'</li>';
 				}
