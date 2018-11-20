@@ -4,39 +4,53 @@ var app = express();
 var http = require('http');
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-//Two arrays: one for users, one for socketIO connections
+//Three arrays: two for users of different rooms, one for socketIO connections
 users = [];
+users1 = [];
 connections = [];
 
+app.use(express.static('public'))
 //make server listen to specified by user port OR port 3000, write to console that all's okay
 server.listen(process.env.PORT || 3000);
 console.log('Server is running...');
 
-//create a route to index.html file
-app.get('/', function(req, res){
+//create routes to index.html file
+app.get('/superprivatechat', function(req, res){
 	res.sendFile(__dirname + '/index.html')
 });
 
+app.get('/', function(req, res){
+	res.sendFile(__dirname + '/index1.html')
+});
 //on connection we push newly created socket to connections array and output number 
 //of socket connection to console
 io.sockets.on('connection', function(socket){
+	//create channels to two index html pages
+	socket.on('channelfixer', function(mychannel){
+		socket.join(mychannel);
+	});
+
+	//push existing socket connections to the end of array
 	connections.push(socket);
-	console.log('Connected: %s sockets connected', connections.length);
+	console.log('Connected: %s sockets connected to', connections.length);
 
 	//on disconnect we cut user that left chat out, update user names and update number of existing connections at the same time
 	socket.on('disconnect', function(data) {
 		users.splice(users.indexOf(socket.username), 1);
+		users1.splice(users.indexOf(socket.username), 1);
 		updateUsernames();
 		console.log(data);
 		connections.splice(connections.indexOf(socket), 1);
 		console.log('Disconnected: %s sockets connected', connections.length);
+		//console.log(socket);
 	});
 
 	//on event 'send message' we print data sent by user, his name and time of the day. There's a built-in check if user entered some data or not, 
 	//in second case no input will be printed. There's no alert window, because it might disconcern some users
-		socket.on('send message', function(data){
+	//Data is sent to different rooms
+	socket.on('send message', function(data){
 		if (data != ''){
-		io.sockets.emit('new message', {msg:data, user: socket.username, hours:pad(new Date().getHours(), 2), minutes:pad(new Date().getMinutes(), 2)});};
+		io.to(Object.values(socket.rooms)[1]).emit('new message', {msg:data, user: socket.username, hours:pad(new Date().getHours(), 2), minutes:pad(new Date().getMinutes(), 2)});};
 	});
 
 	//when new user joins, his name is pushed to jquery variable $username for displaying in scope of particular socket, if no name is entered in textfield then alert window
@@ -57,9 +71,29 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 
+	//users socket for public page
+	socket.on('new user1', function(data, callback){
+		let users_lower = users1.map(item => item.toLowerCase().trim())
+		if(data != '' && !(users_lower.includes(data.toLowerCase().trim())))
+		{callback(true);
+		socket.username = data;
+		users1.push(socket.username);
+		updateUsernames1();
+		} else if (users_lower.includes(data.toLowerCase().trim())){
+			alertAnotherUser();
+		}
+		else {
+			alertUser();
+		}
+	});
+
 	//self-evident function related to Jquery function in index.html
 	function updateUsernames(){
-		io.sockets.emit('get users', users);
+		io.to('superprivatechat').emit('get users', users);
+	}
+
+	function updateUsernames1(){
+		io.to('public').emit('get users1', users1);
 	}
 
 	//emits alert window in index.html
@@ -79,4 +113,6 @@ io.sockets.on('connection', function(socket){
   		str = str.toString();
  		return str.length < max ? pad("0" + str, max) : str;
 	}
+
+
 });
