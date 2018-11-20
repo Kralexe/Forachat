@@ -36,10 +36,10 @@ io.sockets.on('connection', function(socket){
 
 	//on disconnect we cut user that left chat out, update user names and update number of existing connections at the same time
 	socket.on('disconnect', function(data) {
-		users.splice(users.indexOf(socket.username), 1);
-		users1.splice(users1.indexOf(socket.username), 1);
+		delete users[users.indexOf(socket.username)];
+		delete users1[users1.indexOf(socket.username)];
 		updateUsernames();
-		console.log(data);
+		console.log(users, users1);
 		connections.splice(connections.indexOf(socket), 1);
 		console.log('Disconnected: %s sockets connected', connections.length);
 		//console.log(socket);

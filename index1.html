@@ -107,6 +107,7 @@
 			//when previous function invokes 'send message' function from server.js it invokes this function which appends new <div> to div class="well" with username, time of sending the message and the message itself
 			socket.on('new message', function(data){
 				$chat.append('<div class="well"><strong>'+data.user+'_'+data.hours+':'+data.minutes+' '+'</strong>: '+data.msg+'</div>')
+
 			});
 
 			//when the name is submitted, we hide <div> userFormArea and show <div> messageArea
@@ -123,10 +124,12 @@
 
 			//when this function fires up we add currently online users to an unordered list with id #users, when some user leaves, this function we'll also update available users
 			socket.on('get users1', function(data){
+				$('ul li').remove()
 				let html = '';
 				for(i=0; i<data.length;i++){
-					html += '<li class="list-group-item">'+data[i]+'</li>';
-				}
+				if(data[i]!=null) {
+				html += '<li class="list-group-item">'+data[i]+'</li>';
+				};};
 				$users.html(html);
 			})
 
