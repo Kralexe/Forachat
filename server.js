@@ -36,10 +36,11 @@ io.sockets.on('connection', function(socket){
 
 	//on disconnect we cut user that left chat out, update user names and update number of existing connections at the same time
 	socket.on('disconnect', function(data) {
-		delete users[users.indexOf(socket.username)];
-		delete users1[users1.indexOf(socket.username)];
+		users.splice(users.indexOf(socket.username), 1);
+		users1.splice(users1.indexOf(socket.username), 1);
 		updateUsernames();
-		console.log(users, users1);
+		updateUsernames1()
+		console.log(users1);
 		connections.splice(connections.indexOf(socket), 1);
 		console.log('Disconnected: %s sockets connected', connections.length);
 		//console.log(socket);
@@ -49,7 +50,7 @@ io.sockets.on('connection', function(socket){
 	//in second case no input will be printed. There's no alert window, because it might disconcern some users
 	//Data is sent to different rooms
 	socket.on('send message', function(data){
-		if (data != ''){
+	if (data != ''){
 		io.to(Object.values(socket.rooms)[1]).emit('new message', {msg:data, user: socket.username, hours:pad(new Date().getHours(), 2), minutes:pad(new Date().getMinutes(), 2)});};
 	});
 
