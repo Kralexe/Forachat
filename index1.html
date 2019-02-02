@@ -97,14 +97,14 @@
 			//this call is required for creation of different rooms
 			socket.emit('channelfixer', 'public');
 
-			//on submitting the message we invoke 'send message' function and clearing message input field
+			//on submitting the message we're invoking 'send message' function and clearing message input field
 			$messageForm.submit(function(e){
 				e.preventDefault();
 				socket.emit('send message', $message.val());
 				$message.val('');
 			});
 
-			//when previous function invokes 'send message' function from server.js it invokes this function which appends new <div> to div class="well" with username, time of sending the message and the message itself
+			//when previous function invokes 'send message' event from server.js it invokes this function which appends new <div> to div class="well" with username, time of sending the message and the message itself
 			socket.on('new message', function(data){
 				$chat.append('<div class="well"><strong>'+data.user+'_'+data.hours+':'+data.minutes+' '+'</strong>: '+data.msg+'</div>')
 
@@ -138,7 +138,7 @@
 				alert('Enter your nickname');
 			});
 			
-			//user is already exist
+			//user already exists
 			socket.on('alert another user', function(text){
 				alert('This nickname is already taken');
 			});
