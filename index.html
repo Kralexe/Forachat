@@ -120,12 +120,12 @@
 			});
 
 
-			//it's for alert window to pop up when no nickname is entered
+			//it's required for alert window to pop up when no nickname is entered
 			socket.on('alert user', function(text){
 				alert('Enter your nickname');
 			});
 
-			//user is already exist
+			//user already exists
 			socket.on('alert another user', function(text){
 				alert('This nickname is already taken');
 			});
